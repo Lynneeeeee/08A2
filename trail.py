@@ -24,8 +24,13 @@ class TrailSplit:
     path_follow: Trail
 
     def remove_branch(self) -> TrailStore:
-        """Removes the branch, should just leave the remaining following trail."""
-        raise NotImplementedError()
+        """
+        O(1)
+        Removes the branch, should just leave the remaining following trail.
+        return: TrailStore
+        """
+        return self.path_follow.store
+        # raise NotImplementedError()
 
 @dataclass
 class TrailSeries:
@@ -40,24 +45,59 @@ class TrailSeries:
     following: Trail
 
     def remove_mountain(self) -> TrailStore:
-        """Removes the mountain at the beginning of this series."""
-        raise NotImplementedError()
+        """
+        O(1)
+        Removes the mountain at the beginning of this series.
+        return: TrailStore
+        """
+        return self.following.store
+        # raise NotImplementedError()
 
     def add_mountain_before(self, mountain: Mountain) -> TrailStore:
-        """Adds a mountain in series before the current one."""
-        raise NotImplementedError()
+        """
+        O(1)
+        Adds a mountain in series before the current one.
+        parameter: mountain
+        return: TrailStore
+        """
+        new_series = TrailSeries(mountain, Trail(self))
+        return new_series
+
+        # raise NotImplementedError()
 
     def add_empty_branch_before(self) -> TrailStore:
-        """Adds an empty branch, where the current trailstore is now the following path."""
-        raise NotImplementedError()
+        """
+        O(1)
+        Adds an empty branch, where the current trailstore is now the following path.
+        return: TrailStore
+        """
+        new_split = TrailSplit(Trail(None), Trail(None), Trail(self))
+        return new_split
+        # raise NotImplementedError()
 
     def add_mountain_after(self, mountain: Mountain) -> TrailStore:
-        """Adds a mountain after the current mountain, but before the following trail."""
-        raise NotImplementedError()
+        """
+        O(1)
+        Adds a mountain after the current mountain, but before the following trail.
+        parameter: mountain
+        return TrailStore
+        """
+        new_mountain = mountain
+        new_following = Trail(TrailSeries(new_mountain, self.following))
+        new_series = TrailSeries(self.mountain, new_following)
+        return new_series
+        # raise NotImplementedError()
 
     def add_empty_branch_after(self) -> TrailStore:
-        """Adds an empty branch after the current mountain, but before the following trail."""
-        raise NotImplementedError()
+        """
+        O(1)
+        Adds an empty branch after the current mountain, but before the following trail.
+        return: TrailStore
+        """
+        new_following = Trail(TrailSplit(Trail(None), Trail(None), self.following))
+        new_trail = TrailSeries(self.mountain, new_following)
+        return new_trail
+        # raise NotImplementedError()
 
 TrailStore = Union[TrailSplit, TrailSeries, None]
 
@@ -67,16 +107,30 @@ class Trail:
     store: TrailStore = None
 
     def add_mountain_before(self, mountain: Mountain) -> Trail:
-        """Adds a mountain before everything currently in the trail."""
-        raise NotImplementedError()
+        """
+        O(1)
+        Adds a mountain before everything currently in the trail.
+        Parameter: mountain
+        return: Trail
+        """
+        new_trail = Trail(TrailSeries(mountain, self))
+        return new_trail
+        # raise NotImplementedError()
 
     def add_empty_branch_before(self) -> Trail:
-        """Adds an empty branch before everything currently in the trail."""
-        raise NotImplementedError()
+        """
+        O(1)
+        Adds an empty branch before everything currently in the trail.
+        return: Trail
+        """
+        new_trail = Trail(TrailSplit(Trail(None), Trail(None), self))
+        return new_trail
+        # raise NotImplementedError()
 
     def follow_path(self, personality: WalkerPersonality) -> None:
-        """Follow a path and add mountains according to a personality."""
-        raise NotImplementedError()
+        """
+        Follow a path and add mountains according to a personality."""
+        # raise NotImplementedError()
 
     def collect_all_mountains(self) -> list[Mountain]:
         """Returns a list of all mountains on the trail."""
