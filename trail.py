@@ -147,18 +147,20 @@ class Trail:
         stack = [self]
         while stack:
             current_trail = stack.pop()
-            if current_trail is not None:
-                personality.add_mountain(current_trail.mountain)
+            #print(f"Current trail: {current_trail}, Stack: {stack}")
+            if current_trail:
+                if type(current_trail.store)==TrailSeries:
+                    personality.add_mountain(current_trail.store.mountain)
+                    stack.append(current_trail.store.following)
 
-            if current_trail.path_top is not None and current_trail.path_bottom is not None:
-                if personality.select_branch(current_trail.path_top, current_trail.path_bottom):
-                    stack.append(current_trail.path_top)
-                else:
-                    stack.append(current_trail.path_bottom)
-            elif current_trail.path_top is not None:
-                stack.append(current_trail.path_top)
-            elif current_trail.path_bottom is not None:
-                stack.append(current_trail.path_bottom)
+                elif type(current_trail.store)==TrailSplit:
+                    if personality.select_branch(current_trail.store.path_top, current_trail.store.path_bottom):
+                        stack.append(current_trail.store.path_follow)
+                        stack.append(current_trail.store.path_top)
+                    else:
+                        stack.append(current_trail.store.path_follow)
+                        stack.append(current_trail.store.path_bottom)
+
 
         # raise NotImplementedError()
 

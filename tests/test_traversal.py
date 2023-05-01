@@ -37,7 +37,6 @@ class TestTrailMethods(unittest.TestCase):
         self.trail.follow_path(tw)
         self.trail.follow_path(bw)
         self.trail.follow_path(lw)
-
         self.assertListEqual(tw.mountains, [self.top_top, self.top_mid, self.final])
         self.assertListEqual(bw.mountains, [self.bot_one, self.final])
         self.assertListEqual(lw.mountains, [self.top_bot, self.top_mid, self.final])
