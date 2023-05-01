@@ -23,6 +23,7 @@ class TrailSplit:
     path_bottom: Trail
     path_follow: Trail
 
+
     def remove_branch(self) -> TrailStore:
         """
         O(1)
@@ -43,6 +44,7 @@ class TrailSeries:
 
     mountain: Mountain
     following: Trail
+
 
     def remove_mountain(self) -> TrailStore:
         """
@@ -106,6 +108,7 @@ class Trail:
 
     store: TrailStore = None
 
+
     def add_mountain_before(self, mountain: Mountain) -> Trail:
         """
         O(1)
@@ -129,7 +132,34 @@ class Trail:
 
     def follow_path(self, personality: WalkerPersonality) -> None:
         """
-        Follow a path and add mountains according to a personality."""
+        O(n)
+
+        Follow a path and add mountains according to a personality.
+
+        method: Using the stack to store the trail, iterate the stack use the while loopt he trail which has been poped
+        is represented the current trail to be processed. If the current trail have the mountain, use add_mountain
+        method the record the mountain into the walker's list of visited mountains. If current trail have a split path,
+        use select_branch to decide which path to take. If the current trail has only a top or bottom path, append the
+        existing path to the stack.
+
+        parameter: personality
+        """
+        stack = [self]
+        while stack:
+            current_trail = stack.pop()
+            if current_trail is not None:
+                personality.add_mountain(current_trail.mountain)
+
+            if current_trail.path_top is not None and current_trail.path_bottom is not None:
+                if personality.select_branch(current_trail.path_top, current_trail.path_bottom):
+                    stack.append(current_trail.path_top)
+                else:
+                    stack.append(current_trail.path_bottom)
+            elif current_trail.path_top is not None:
+                stack.append(current_trail.path_top)
+            elif current_trail.path_bottom is not None:
+                stack.append(current_trail.path_bottom)
+
         # raise NotImplementedError()
 
     def collect_all_mountains(self) -> list[Mountain]:
