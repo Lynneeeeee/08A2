@@ -23,7 +23,6 @@ class TrailSplit:
     path_bottom: Trail
     path_follow: Trail
 
-
     def remove_branch(self) -> TrailStore:
         """
         O(1)
@@ -44,7 +43,6 @@ class TrailSeries:
 
     mountain: Mountain
     following: Trail
-
 
     def remove_mountain(self) -> TrailStore:
         """
@@ -108,7 +106,6 @@ class Trail:
 
     store: TrailStore = None
 
-
     def add_mountain_before(self, mountain: Mountain) -> Trail:
         """
         O(1)
@@ -147,21 +144,20 @@ class Trail:
         stack = [self]
         while stack:
             current_trail = stack.pop()
-            #print(f"Current trail: {current_trail}, Stack: {stack}")
+            # print(f"Current trail: {current_trail}, Stack: {stack}")
+
             if current_trail:
-                if type(current_trail.store)==TrailSeries:
+                if type(current_trail.store) == TrailSeries:
                     personality.add_mountain(current_trail.store.mountain)
                     stack.append(current_trail.store.following)
 
-                elif type(current_trail.store)==TrailSplit:
+                elif type(current_trail.store) == TrailSplit:
                     if personality.select_branch(current_trail.store.path_top, current_trail.store.path_bottom):
                         stack.append(current_trail.store.path_follow)
                         stack.append(current_trail.store.path_top)
                     else:
                         stack.append(current_trail.store.path_follow)
                         stack.append(current_trail.store.path_bottom)
-
-
         # raise NotImplementedError()
 
     def collect_all_mountains(self) -> list[Mountain]:

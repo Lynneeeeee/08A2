@@ -27,8 +27,31 @@ class DoubleKeyTable(Generic[K1, K2, V]):
 
     HASH_BASE = 31
 
-    def __init__(self, sizes:list|None=None, internal_sizes:list|None=None) -> None:
-        raise NotImplementedError()
+    def __init__(self, sizes:list|None = None, internal_sizes: list|None = None) -> None:
+
+        """
+        O(n)
+        if we know the size of self.sizes and internal_sizes, otherwise we will use the TABLE_SIZES
+        the first element in the "size" list is the starting point of the table size, represented the initial size of
+        the main table, same as the self.internal_sizes[0].
+        self.table is used to create an empty hash table with a predefined size.
+        parameter: sizes, internal_sizes
+        """
+
+        if sizes is None:
+            self.sizes = self.TABLE_SIZES
+        else:
+            self.sizes = sizes
+
+        if internal_sizes is None:
+            self.internal_sizes = self.TABLE_SIZES
+        else:
+            self.internal_sizes = internal_sizes
+
+        self.size = self.sizes[0]
+        self.internal_size = self.internal_sizes[0]
+        self.table = [None] * self.size
+        # raise NotImplementedError()
 
     def hash1(self, key: K1) -> int:
         """
@@ -65,7 +88,22 @@ class DoubleKeyTable(Generic[K1, K2, V]):
         :raises KeyError: When the key pair is not in the table, but is_insert is False.
         :raises FullError: When a table is full and cannot be inserted.
         """
-        raise NotImplementedError()
+
+        index1 = self.hash1(key1)
+        sub_table = self.table[index1]
+
+        if sub_table is None:
+            if is_insert:
+                sub_table = LinearProbeTable[K2, V](self.internal_size)
+                self.table[index1] = sub_table[0]
+            else:
+                raise KeyError((key1, key2))
+            raise FullError
+
+        index2 = sub_table.linear_probe(key2, is_insert)
+        return index1, index2
+
+        # raise NotImplementedError()
 
     def iter_keys(self, key:K1|None=None) -> Iterator[K1|K2]:
         """
