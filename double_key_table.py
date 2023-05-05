@@ -97,10 +97,25 @@ class DoubleKeyTable(Generic[K1, K2, V]):
                 sub_table = LinearProbeTable[K2, V](self.internal_size)
                 self.table[index1] = sub_table[0]
             else:
-                raise KeyError((key1, key2))
-            raise FullError
+                index2 = sub_table.table_size  # Use table_size as a sentinel value
+                return index1, index2
 
-        index2 = sub_table.linear_probe(key2, is_insert)
+        index2 = self.hash2(key2, sub_table)
+        for i in range(sub_table.table_size):
+            if sub_table.array[index2] is None:
+                if is_insert:
+                    break
+                else:
+                    index2 = sub_table.table_size  # Use table_size as a sentinel value
+                    break
+            elif sub_table.array[index2][0] == key2:
+                break
+            else:
+                index2 = (index2 + 1) % sub_table.table_size
+        else:
+            if is_insert:
+                index2 = sub_table.table_size  # Use table_size as a sentinel value
+
         return index1, index2
 
         # raise NotImplementedError()
@@ -112,7 +127,8 @@ class DoubleKeyTable(Generic[K1, K2, V]):
         key = k:
             Returns an iterator of all keys in the bottom-hash-table for k.
         """
-        raise NotImplementedError()
+
+        # raise NotImplementedError()
 
     def keys(self, key:K1|None=None) -> list[K1]:
         """
