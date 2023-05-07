@@ -162,7 +162,23 @@ class Trail:
 
     def collect_all_mountains(self) -> list[Mountain]:
         """Returns a list of all mountains on the trail."""
-        raise NotImplementedError()
+        mountains = []
+        stack = [self]
+
+        while stack:
+            current_trail = stack.pop()
+
+            if current_trail:
+                if isinstance(current_trail.store, TrailSeries):
+                    mountains.append(current_trail.store.mountain)
+                    stack.append(current_trail.store.following)
+                elif isinstance(current_trail.store, TrailSplit):
+                    stack.append(current_trail.store.path_top)
+                    stack.append(current_trail.store.path_bottom)
+                    stack.append(current_trail.store.path_follow)
+
+            return mountains
+        # raise NotImplementedError()
 
     def length_k_paths(self, k) -> list[list[Mountain]]: # Input to this should not exceed k > 50, at most 5 branches.
         """
@@ -171,4 +187,28 @@ class Trail:
 
         Paths are unique if they take a different branch, even if this results in the same set of mountains.
         """
-        raise NotImplementedError()
+        paths = []
+        stack = [(self, [])]
+
+        while stack:
+            current_trail, current_path = stack.pop()
+
+            if current_trail:
+                if isinstance(current_trail.store, TrailSeries):
+                    current_mountain = current_trail.store.mountain
+                    current_following = current_trail.store.following
+                    if len(current_path) == k - 1:
+                        paths.append(current_path + [current_mountain])
+                    elif len(current_path) < k - 1:
+                        stack.append((current_following, current_path + [current_mountain]))
+
+                elif isinstance(current_trail.store, TrailSplit):
+                    path_follow = current_trail.store.path_follow
+                    path_bottom = current_trail.store.path_bottom
+                    path_top = current_trail.store.path_top
+                    stack.append((path_follow, current_path))
+                    stack.append((path_bottom, current_path))
+                    stack.append((path_top, current_path))
+
+        return paths
+        # raise NotImplementedError()
