@@ -158,7 +158,7 @@ class Trail:
                     stack.append(current_trail.store.path_bottom)
                     stack.append(current_trail.store.path_follow)
 
-            return mountains
+        return mountains[::-1] if mountains else []
 
     def length_k_paths(self, k) -> list[list[Mountain]]: # Input to this should not exceed k > 50, at most 5 branches.
         """
@@ -177,17 +177,18 @@ class Trail:
                 if isinstance(current_trail.store, TrailSeries):
                     current_mountain = current_trail.store.mountain
                     current_following = current_trail.store.following
-                    if len(current_path) == k - 1:
+                    if len(current_path) == k:
                         paths.append(current_path + [current_mountain])
-                    elif len(current_path) < k - 1:
+                    elif len(current_path) < k:
                         stack.append((current_following, current_path + [current_mountain]))
 
                 elif isinstance(current_trail.store, TrailSplit):
                     path_follow = current_trail.store.path_follow
                     path_bottom = current_trail.store.path_bottom
                     path_top = current_trail.store.path_top
-                    stack.append((path_follow, current_path))
-                    stack.append((path_bottom, current_path))
-                    stack.append((path_top, current_path))
 
+
+                    stack.append((path_top, current_path))
+                    stack.append((path_bottom, current_path))
+                    stack.append((path_follow, current_path))
         return paths
