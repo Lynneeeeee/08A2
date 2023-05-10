@@ -79,7 +79,6 @@ class LinearProbeTable(Generic[K, V]):
         """
         # Initial position
         position = self.hash(key)
-
         for _ in range(self.table_size):
             if self.array[position] is None:
                 # Empty spot. Am I upserting or retrieving?

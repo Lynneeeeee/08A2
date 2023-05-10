@@ -31,3 +31,5 @@ class TestInfiniteHash(unittest.TestCase):
         self.assertEqual([mo.cur_position(m) for m in [m1, m2, m3, m4, m5, m6, m7, m8, m9]], [1, 8, 3, 0, 4, 2, 6, 7, 5])
 
         self.assertRaises(KeyError, lambda: mo.cur_position(m10))
+
+
