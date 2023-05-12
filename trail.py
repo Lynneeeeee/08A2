@@ -167,24 +167,18 @@ class Trail:
 
         Paths are unique if they take a different branch, even if this results in the same set of mountains.
         """
-        paths = []
-        list_ = [(self, [])]
+        return [ i for i in self.get_all_paths() if len(i)==k ]
 
-        for current_trail, current_path in list_:
-            if current_trail:
-                if isinstance(current_trail.store, TrailSeries):
-                    current_mountain = current_trail.store.mountain
-                    current_following = current_trail.store.following
-                    if len(current_path) + 1 == k:
-                        paths.append(current_path + [current_mountain])
-                    elif len(current_path) < k:
-                        list_.append((current_following, current_path + [current_mountain]))
+    def get_all_paths(self) -> list[list[Mountain]]:
+        if self.store is None:
+            return [[]]
 
-                elif isinstance(current_trail.store, TrailSplit):
-                    path_bottom = current_trail.store.path_bottom
-                    path_top = current_trail.store.path_top
+        if isinstance(self.store,TrailSplit):
+            retval=[]
+            for i in self.store.path_top.get_all_paths()+self.store.path_bottom.get_all_paths():
+                for j in self.store.path_follow.get_all_paths():
+                    retval.append(i+j)
+            return retval
 
-                    list_.append((path_top, current_path[:]))  # add to end of list
-                    list_.append((path_bottom, current_path[:]))  # add to end of list
-
-        return paths
+        if isinstance(self.store, TrailSeries):
+            return [[self.store.mountain] + i for i in self.store.following.get_all_paths()]
