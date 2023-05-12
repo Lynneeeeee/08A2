@@ -242,15 +242,6 @@ class DoubleKeyTable(Generic[K1, K2, V]):
             inner_hash_table.hash = lambda k: self.hash2(k, inner_hash_table)
             self.top_level_table[k1] = inner_hash_table
 
-        # if self.top_level_table.array[outer_pos] is None:
-        #     raise KeyError(key)  # Key does not exist in the hash table
-
-        # if self.top_level_table.array[outer_pos] is None:
-        #    raise KeyError(key)  # Key does not exist in the hash table
-        # if self.top_level_table.array[outer_pos][0] != k1:
-        #    raise KeyError(key)
-
-        # inner_hash_table = self.top_level_table.array[outer_pos][1]
         inner_hash_table = self.top_level_table[k1]
         try:
             inner_hash_table[k2]
@@ -317,7 +308,6 @@ class DoubleKeyTable(Generic[K1, K2, V]):
         Returns number of elements in the hash table
         """
         return self.count
-        # raise NotImplementedError()
 
     def __str__(self) -> str:
         """
@@ -325,5 +315,9 @@ class DoubleKeyTable(Generic[K1, K2, V]):
 
         Not required but may be a good testing tool.
         """
-
-        raise NotImplementedError()
+        result = ""
+        for item in self.top_level_table:
+            if item is not None:
+                (key, value) = item
+                result += "(" + str(key) + "," + str(value) + ")\n"
+        return result
