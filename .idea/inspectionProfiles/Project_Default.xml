@@ -1,6 +1,7 @@
 <component name="InspectionProjectProfileManager">
   <profile version="1.0">
     <option name="myName" value="Project Default" />
+<<<<<<< HEAD
     <inspection_tool class="PyPackageRequirementsInspection" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="ignoredPackages">
         <value>
@@ -21,6 +22,15 @@
       <option name="ignoredNames">
         <list>
           <option value="next" />
+=======
+    <inspection_tool class="PyUnresolvedReferencesInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredIdentifiers">
+        <list>
+          <option value="list.length" />
+          <option value="list.serve" />
+          <option value="list.size" />
+          <option value="list.is_empty" />
+>>>>>>> origin/main
         </list>
       </option>
     </inspection_tool>
