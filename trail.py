@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING, Union
 if TYPE_CHECKING:
     from personality import WalkerPersonality
 
+
 @dataclass
 class TrailSplit:
     """
@@ -30,6 +31,7 @@ class TrailSplit:
         return: TrailStore
         """
         return self.path_follow.store
+
 
 @dataclass
 class TrailSeries:
@@ -85,27 +87,28 @@ class TrailSeries:
         """
         return TrailSeries(self.mountain, Trail(TrailSplit(Trail(None), Trail(None), self.following)))
 
+
 TrailStore = Union[TrailSplit, TrailSeries, None]
+
 
 @dataclass
 class Trail:
-
     store: TrailStore = None
 
     def add_mountain_before(self, mountain: Mountain) -> Trail:
         """
-        O(1)
         Adds a mountain before everything currently in the trail.
         Parameter: mountain
         return: Trail
+        :Complexity: O(1)
         """
         return Trail(TrailSeries(mountain, self))
 
     def add_empty_branch_before(self) -> Trail:
         """
-        O(1)
         Adds an empty branch before everything currently in the trail.
         return: Trail
+        :Complexity: O(1)
         """
         return Trail(TrailSplit(Trail(None), Trail(None), self))
 
@@ -142,7 +145,11 @@ class Trail:
                         stack.append(current_trail.store.path_bottom)
 
     def collect_all_mountains(self) -> list[Mountain]:
-        """Returns a list of all mountains on the trail."""
+        """
+        Returns a list of all mountains on the trail.
+        Uses a stack to traverse the trail and collects mountains along the way
+        : Complexity:O(N)
+        """
         mountains = []
         stack = [self]
 
@@ -160,24 +167,28 @@ class Trail:
 
         return mountains[::-1] if mountains else []
 
-    def length_k_paths(self, k) -> list[list[Mountain]]: # Input to this should not exceed k > 50, at most 5 branches.
+    def length_k_paths(self, k) -> list[list[Mountain]]:  # Input to this should not exceed k > 50, at most 5 branches.
         """
         Returns a list of all paths of containing exactly k mountains.
         Paths are represented as lists of mountains.
-
+        : Complexity:O(1)
         Paths are unique if they take a different branch, even if this results in the same set of mountains.
         """
-        return [ i for i in self.get_all_paths() if len(i)==k ]
+        return [i for i in self.get_all_paths() if len(i) == k]
 
     def get_all_paths(self) -> list[list[Mountain]]:
+        """
+        Get a list of mountains by traversing all parts
+        : Complexity:O(N)
+        """
         if self.store is None:
             return [[]]
 
-        if isinstance(self.store,TrailSplit):
-            retval=[]
-            for i in self.store.path_top.get_all_paths()+self.store.path_bottom.get_all_paths():
+        if isinstance(self.store, TrailSplit):
+            retval = []
+            for i in self.store.path_top.get_all_paths() + self.store.path_bottom.get_all_paths():
                 for j in self.store.path_follow.get_all_paths():
-                    retval.append(i+j)
+                    retval.append(i + j)
             return retval
 
         if isinstance(self.store, TrailSeries):
