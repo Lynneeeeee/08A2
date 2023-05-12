@@ -42,9 +42,9 @@ class TestInfiniteHash(unittest.TestCase):
         ih["mining"] = 6
         ih["jake"] = 7
         ih["linger"] = 8
-
+        print("lin location",ih.get_location("lin"))
         del ih["limp"]
-
+        print("lin location", ih.get_location("lin"))
         # Should do nothing
         self.assertEqual(ih.get_location("linked"), [4, 1, 6, 3])
 
@@ -58,7 +58,7 @@ class TestInfiniteHash(unittest.TestCase):
         del ih["leg"]
         del ih["linger"]
         del ih["linked"]
-
+        print("lin location", ih.get_location("lin"))
         self.assertEqual(ih["lin"], 1)
         self.assertEqual(ih.get_location("lin"), [4])
 

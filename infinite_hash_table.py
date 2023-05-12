@@ -24,7 +24,8 @@ class InfiniteHashTable(Generic[K, V]):
     def __init__(self, level: int = 0) -> None:
         self.level = level
         self.table_size = self.TABLE_SIZE
-        self.table = {}
+        self.table: ArrayR[tuple[K, V] | InfiniteHashTable[K, V]] = ArrayR(self.table_size)
+        self.count = 0
 
     def hash(self, key: K) -> int:
         if self.level < len(key):
@@ -39,16 +40,19 @@ class InfiniteHashTable(Generic[K, V]):
         :raises KeyError: when the key doesn't exist.
         """
         if len(key) == 0:
+            raise KeyError("Key cannot be empty")
+        index=self.hash(key)
+
+        if self.table[index] is None:
             raise KeyError("Key does not exist")
 
-        index = self.hash(key)
-        if index not in self.table:
-            raise KeyError("Key does not exist")
-
-        if len(key) == 1:
-            return self.table[index]
+        if isinstance(self.table[index], InfiniteHashTable):
+            return self.table[index][key]
+        elif self.table[index][0]==key:
+            return self.table[index][1]
         else:
-            return self.table[index].__getitem__(key)
+            raise KeyError("Key does not exist")
+
 
     def __setitem__(self, key: K, value: V) -> None:
         """
@@ -61,13 +65,21 @@ class InfiniteHashTable(Generic[K, V]):
             raise KeyError("Key cannot be empty")
 
         index = self.hash(key)
-        if index not in self.table:
-            self.table[index] = InfiniteHashTable()
-            self.table[index].key = key
-            self.table[index].value = value
+        if self.table[index] is None:
+            self.table[index] = (key, value)
+            self.count += 1
+        elif isinstance(self.table[index], InfiniteHashTable):
+            self.table[index][key]=value
+            self.count += 1
+        elif self.table[index][0] == key:
+            self.table[index] = (key, value)
         else:
-            self.table[index] = InfiniteHashTable(self.level + 1)
-            self.table[index].__setitem__(key, value)
+            temp_pair = self.table[index]
+            self.table[index] = InfiniteHashTable(self.level+1)
+            self.table[index][temp_pair[0]] = temp_pair[1]
+            self.table[index][key] = value
+            self.count += 1
+
         # if len(key) == 1:
         #     self.table[index] = value
         # else:
@@ -86,20 +98,31 @@ class InfiniteHashTable(Generic[K, V]):
             raise KeyError("Key cannot be empty")
 
         index = self.hash(key)
-        if index in self.table:
-            if len(key) == 1:
-                del self.table[index]
-            else:
-                subtable = self.table[index]
-                if isinstance(subtable, InfiniteHashTable):
-                    del subtable[key[1:]]
-                else:
-                    raise KeyError("Key does not exist")
+
+        if self.table[index] is None:
+            raise KeyError("Key does not exist")
+        print("key", key)
+        print(self.count)
+        if isinstance(self.table[index], InfiniteHashTable):
+            del self.table[index][key]
+            self.count-=1
+            if len(self.table[index])==1:
+
+                inner_pair=self.table[index].get_first_pair()
+                self.table[index]=inner_pair
+
+        elif self.table[index][0]==key:
+            self.table[index] = None
+            self.count-=1
         else:
             raise KeyError("Key does not exist")
 
+    def get_first_pair(self):
+        for i in self.table:
+            if i:
+                return i
     def __len__(self):
-        return sum(len(subtable) if isinstance(subtable, InfiniteHashTable) else 1 for subtable in self.table.values())
+        return self.count
 
     def __str__(self) -> str:
         """
@@ -120,14 +143,13 @@ class InfiniteHashTable(Generic[K, V]):
             raise KeyError("Key does not exist")
 
         index = self.hash(key)
-        # print('hi')
-        # print(index in self.table)
-        if index in self.table:
-            if len(key) == 1:
-                return [index]
-            else:
-                print(self.table[index])
-                return [index] + self.table[index].get_location(key)
+        if self.table[index] is None:
+            raise KeyError("Key does not exist")
+
+        if isinstance(self.table[index],InfiniteHashTable):
+            return [index] + self.table[index].get_location(key)
+        elif self.table[index][0]==key:
+            return [index]
         else:
             raise KeyError("Key does not exist")
 
