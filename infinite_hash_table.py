@@ -23,7 +23,6 @@ class InfiniteHashTable(Generic[K, V]):
     def __init__(self, level: int = 0) -> None:
         self.level = level
         self.table = {}
-        # self.table = [None] * self.TABLE_SIZE
 
     def hash(self, key: K) -> int:
         if self.level < len(key):
@@ -40,13 +39,13 @@ class InfiniteHashTable(Generic[K, V]):
             raise KeyError("Key does not exist")
 
         index = self.hash(key)
-        if index in self.table:
-            if len(key) == 1:
-                return self.table[index]
-            else:
-                return self.table[index].__getitem__(key[1:])
-        else:
+        if index not in self.table:
             raise KeyError("Key does not exist")
+
+        if len(key) == 1:
+            return self.table[index]
+        else:
+            return self.table[index].__getitem__(key[1:])
 
     def __setitem__(self, key: K, value: V) -> None:
         """
@@ -57,12 +56,13 @@ class InfiniteHashTable(Generic[K, V]):
 
         index = self.hash(key)
         if index not in self.table:
-            self.table[index] = InfiniteHashTable(level=self.level + 1)
+            self.table[index] = InfiniteHashTable(self.level)
 
         if len(key) == 1:
             self.table[index] = value
         else:
-            self.table[index].__setitem__(key[1:], value)
+            self.table[index].__setitem__(key, value)
+            self.level += 1
 
     def __delitem__(self, key: K) -> None:
         """
@@ -78,7 +78,11 @@ class InfiniteHashTable(Generic[K, V]):
             if len(key) == 1:
                 del self.table[index]
             else:
-                del self.table[index].__delitem__(key[1:])
+                subtable = self.table[index]
+                if isinstance(subtable, InfiniteHashTable):
+                    del subtable[key[1:]]
+                else:
+                    raise KeyError("Key does not exist")
         else:
             raise KeyError("Key does not exist")
 
@@ -109,16 +113,7 @@ class InfiniteHashTable(Generic[K, V]):
             else:
                 return [index] + self.table[index].get_location(key[1:])
         else:
-            raise KeyError("Key does not exist")
-
-        # locations = []
-        # for level in range(4):
-        #     self.level = level
-        #     position = self.hash(key)
-        #     if self.table[position] is None:  # the key doesn't exist
-        #         raise KeyError(key)
-        #     locations.append(position)
-        # return locations
+            return []
 
     def __contains__(self, key: K) -> bool:
         """

@@ -37,7 +37,7 @@ class MountainManager:
         :parameter: diff: int difficulty of mountain
         :complexity: O(N)
         '''
-        filtered_mountains = [mountain for mountain in self.mountains if mountain.difficulty == diff]
+        filtered_mountains = [mountain for mountain in self.mountains if mountain.difficulty_level == diff]
         return filtered_mountains
 
     def group_by_difficulty(self) -> list[list[Mountain]]:
@@ -45,12 +45,12 @@ class MountainManager:
         Returns a list of lists of all mountains, grouped by and sorted by ascending difficulty.
         :complexity: O(N)
         '''
-        sorted_mountains = sorted(self.mountains, key=lambda mountain: (mountain.difficulty, mountain.elevation))
+        sorted_mountains = sorted(self.mountains, key=lambda mountain: (mountain.difficulty_level, mountain.length))
         grouped_mountains = []
         current_group = []
 
         for mountain in sorted_mountains:
-            if not current_group or mountain.difficulty != current_group[0].difficulty:
+            if not current_group or mountain.difficulty_level != current_group[0].difficulty_level:
                 if current_group:
                     grouped_mountains.append(current_group)
                 current_group = [mountain]
