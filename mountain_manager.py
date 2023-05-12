@@ -7,20 +7,44 @@ class MountainManager:
         self.mountains = []
 
     def add_mountain(self, mountain: Mountain):
+        '''
+        Add a mountain to the manager
+        :parameter: mountain: Mountain
+        :complexity: O(1)
+        '''
         self.mountains.append(mountain)
 
     def remove_mountain(self, mountain: Mountain):
+        '''
+        Remove a mountain from the manager
+        :parameter: mountain: Mountain
+        :complexity: O(1)
+        '''
         self.mountains.remove(mountain)
 
     def edit_mountain(self, old: Mountain, new: Mountain):
+        '''
+        Remove the old mountain and add the new mountain.
+        :parameter: mountain: Mountain
+        :complexity: O(1)
+        '''
         index = self.mountains.index(old)
         self.mountains[index] = new
 
-    def mountains_with_difficulty(self, diff: int):
+    def mountains_with_difficulty(self, diff: int) -> list[Mountain]:
+        '''
+        Return a list of all mountains with this difficulty.
+        :parameter: diff: int difficulty of mountain
+        :complexity: O(N)
+        '''
         filtered_mountains = [mountain for mountain in self.mountains if mountain.difficulty == diff]
         return filtered_mountains
 
     def group_by_difficulty(self) -> list[list[Mountain]]:
+        '''
+        Returns a list of lists of all mountains, grouped by and sorted by ascending difficulty.
+        :complexity: O(N)
+        '''
         sorted_mountains = sorted(self.mountains, key=lambda mountain: (mountain.difficulty, mountain.elevation))
         grouped_mountains = []
         current_group = []
