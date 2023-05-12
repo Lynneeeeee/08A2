@@ -8,6 +8,7 @@ K1 = TypeVar('K1')
 K2 = TypeVar('K2')
 V = TypeVar('V')
 
+
 class DoubleKeyTable(Generic[K1, K2, V]):
     """
     Double Hash Table.
@@ -23,11 +24,12 @@ class DoubleKeyTable(Generic[K1, K2, V]):
     """
 
     # No test case should exceed 1 million entries.
-    TABLE_SIZES = [5, 13, 29, 53, 97, 193, 389, 769, 1543, 3079, 6151, 12289, 24593, 49157, 98317, 196613, 393241, 786433, 1572869]
+    TABLE_SIZES = [5, 13, 29, 53, 97, 193, 389, 769, 1543, 3079, 6151, 12289, 24593, 49157, 98317, 196613, 393241,
+                   786433, 1572869]
 
     HASH_BASE = 31
 
-    def __init__(self, sizes:list|None = None, internal_sizes: list|None = None) -> None:
+    def __init__(self, sizes: list | None = None, internal_sizes: list | None = None) -> None:
 
         """
         O(n)
@@ -37,31 +39,11 @@ class DoubleKeyTable(Generic[K1, K2, V]):
         self.table is used to create an empty hash table with a predefined size.
         parameter: sizes, internal_sizes
         """
-
-        # if sizes is None:
-        #     self.sizes = self.TABLE_SIZES
-        # else:
-        #     self.sizes = sizes
-
-        # if internal_sizes is None:
-        #    self.internal_sizes = self.TABLE_SIZES
-        # else:
-        #     self.internal_sizes = internal_sizes
-
-        # self.size = self.sizes[0]
-        # self.internal_size = self.internal_sizes[0]
-        # self.table = [None] * self.size
-        # raise NotImplementedError()
-        if sizes:
-            self.sizes = sizes
-        else:
-            self.sizes = self.TABLE_SIZES
-
+        if sizes is not None:
+            self.TABLE_SIZES = sizes
         self.internal_sizes = internal_sizes
-        self.top_level_table = LinearProbeTable[K1, LinearProbeTable[K2, V]](self.sizes)
-        self.count=0
-
-
+        self.top_level_table = LinearProbeTable[K1, LinearProbeTable[K2, V]](self.TABLE_SIZES)
+        self.count = 0
 
     def hash1(self, key: K1) -> int:
         """
@@ -119,21 +101,19 @@ class DoubleKeyTable(Generic[K1, K2, V]):
                 inner_pos = temp._linear_probe(key2, is_insert)
         else:
             inner_pos = self.top_level_table[key1]._linear_probe(key2, is_insert)
-
-        return (outer_pos,inner_pos)
-
-        if is_insert:
-            if self.top_level_table.array[outer_pos] is None:
-
-                inner_hash_table = LinearProbeTable[key2, V](sizes=self.internal_sizes)
-                inner_hash_table.hash = lambda k: self.hash2(k, inner_hash_table)
-                key_and_inner_hash_table = (key1, inner_hash_table)
-
-                self.top_level_table.array[outer_pos] = key_and_inner_hash_table
-
-        bottom_level_table = self.top_level_table.array[outer_pos][1]
-        inner_pos = bottom_level_table._linear_probe(key2, is_insert)   ####
         return (outer_pos, inner_pos)
+
+        # if is_insert:
+        #     if self.top_level_table.array[outer_pos] is None:
+        #         inner_hash_table = LinearProbeTable[key2, V](sizes=self.internal_sizes)
+        #         inner_hash_table.hash = lambda k: self.hash2(k, inner_hash_table)
+        #         key_and_inner_hash_table = (key1, inner_hash_table)
+        #
+        #         self.top_level_table.array[outer_pos] = key_and_inner_hash_table
+        #
+        # bottom_level_table = self.top_level_table.array[outer_pos][1]
+        # inner_pos = bottom_level_table._linear_probe(key2, is_insert)
+        # return (outer_pos, inner_pos)
 
         # index1 = self.hash1(key1)
         # sub_table = self.table[index1]
@@ -166,9 +146,7 @@ class DoubleKeyTable(Generic[K1, K2, V]):
 
         # raise NotImplementedError()
 
-
-
-    def iter_keys(self, key:K1|None=None) -> Iterator[K1|K2]:
+    def iter_keys(self, key: K1 | None = None) -> Iterator[K1 | K2]:
         """
         key = None:
             Returns an iterator of all top-level keys in hash table
@@ -196,7 +174,7 @@ class DoubleKeyTable(Generic[K1, K2, V]):
                     yield start[0]
         # raise NotImplementedError()
 
-    def keys(self, key:K1|None=None) -> list[K1]:
+    def keys(self, key: K1 | None = None) -> list[K1]:
         """
         key = None: returns all top-level keys in the table.
         key = x: returns all bottom-level keys for top-level key x.
@@ -211,7 +189,7 @@ class DoubleKeyTable(Generic[K1, K2, V]):
             return list(self.iter_keys(key))
             # raise NotImplementedError()
 
-    def iter_values(self, key:K1|None=None) -> Iterator[V]:
+    def iter_values(self, key: K1 | None = None) -> Iterator[V]:
         """
         key = None:
             Returns an iterator of all values in hash table
@@ -222,7 +200,7 @@ class DoubleKeyTable(Generic[K1, K2, V]):
         :return: Iterator[V]
         :complexity: O(m*n)
         """
-        self.top_level_table.hash=self.hash1
+        self.top_level_table.hash = self.hash1
         if key is None:
             for start in self.top_level_table.array:
                 if start is not None:
@@ -240,7 +218,7 @@ class DoubleKeyTable(Generic[K1, K2, V]):
 
         # raise NotImplementedError()
 
-    def values(self, key:K1|None=None) -> list[V]:
+    def values(self, key: K1 | None = None) -> list[V]:
         """
         key = None: returns all values in the table.
         key = x: returns all values for top-level key x.
@@ -322,27 +300,25 @@ class DoubleKeyTable(Generic[K1, K2, V]):
         try:
             self.top_level_table[k1]
         except KeyError:
-            inner_hash_table=LinearProbeTable[K2, V](self.internal_sizes)
-            inner_hash_table.hash=lambda k: self.hash2(k,inner_hash_table)
-            self.top_level_table[k1]=inner_hash_table
+            inner_hash_table = LinearProbeTable[K2, V](self.internal_sizes)
+            inner_hash_table.hash = lambda k: self.hash2(k, inner_hash_table)
+            self.top_level_table[k1] = inner_hash_table
 
         # if self.top_level_table.array[outer_pos] is None:
         #     raise KeyError(key)  # Key does not exist in the hash table
 
-        #if self.top_level_table.array[outer_pos] is None:
+        # if self.top_level_table.array[outer_pos] is None:
         #    raise KeyError(key)  # Key does not exist in the hash table
-        #if self.top_level_table.array[outer_pos][0] != k1:
+        # if self.top_level_table.array[outer_pos][0] != k1:
         #    raise KeyError(key)
 
-        #inner_hash_table = self.top_level_table.array[outer_pos][1]
-        inner_hash_table=self.top_level_table[k1]
+        # inner_hash_table = self.top_level_table.array[outer_pos][1]
+        inner_hash_table = self.top_level_table[k1]
         try:
             inner_hash_table[k2]
         except KeyError:
-            self.count+=1
+            self.count += 1
         inner_hash_table[k2] = data
-
-
 
     def __delitem__(self, key: tuple[K1, K2]) -> None:
 
@@ -358,7 +334,7 @@ class DoubleKeyTable(Generic[K1, K2, V]):
         self.top_level_table.hash = self.hash1
         k1, k2 = key
         del self.top_level_table[k1][k2]
-        if len(self.top_level_table[k1])==0:
+        if len(self.top_level_table[k1]) == 0:
             del self.top_level_table[k1]
         self.count -= 1
 
@@ -399,7 +375,6 @@ class DoubleKeyTable(Generic[K1, K2, V]):
         Return the current size of the table (different from the length)
         """
         return self.top_level_table.table_size
-
 
     def __len__(self) -> int:
         """
