@@ -109,6 +109,10 @@ class InfiniteHashTable(Generic[K, V]):
             raise KeyError("Key does not exist")
 
     def get_first_pair(self):
+        """
+        Get the first pair
+        :Complexity: O(N)
+        """
         for i in self.table:
             if i:
                 return i
