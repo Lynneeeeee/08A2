@@ -5,37 +5,6 @@ from typing import List
 from mountain import Mountain
 
 class MountainOrganiser:
-
-
-
-
-    # self.mountains: List[Mountain] = []
-
-    # def cur_position(self, mountain: Mountain) -> int:
-    #     # Sort the mountains list by length and name
-    #     # sorted_mountains = sorted(self.mountains, key=lambda m: (m.length, m.name))
-    #
-    #     # Perform a binary search to find the position of the mountain
-    #     left = 0
-    #     right = len(self.mountains) - 1
-    #
-    #     while left <= right:
-    #         mid = (left + right) // 2
-    #         if self.mountains[mid] == mountain:
-    #             return mid
-    #         elif self.mountains[mid] < mountain:
-    #             left = mid + 1
-    #         else:
-    #             right = mid - 1
-    #
-    #     raise KeyError("Mountain not found")
-    #
-    # def add_mountains(self, mountains: List[Mountain]) -> None:
-    #     self.mountains.extend(mountains)
-    #     self.mountains.sort(key=lambda m: (m.length, m.name))
-
-
-
     def __init__(self) -> None:
         self.mountains = []
 

@@ -21,7 +21,8 @@ class InfiniteHashTable(Generic[K, V]):
     TABLE_SIZE = 27
 
     def __init__(self) -> None:
-        raise NotImplementedError()
+        self.level = 0
+        self.table = [None] * self.TABLE_SIZE
 
     def hash(self, key: K) -> int:
         if self.level < len(key):
@@ -34,13 +35,14 @@ class InfiniteHashTable(Generic[K, V]):
 
         :raises KeyError: when the key doesn't exist.
         """
-        raise NotImplementedError()
+
+        raise KeyError(key)
 
     def __setitem__(self, key: K, value: V) -> None:
         """
         Set an (key, value) pair in our hash table.
         """
-        raise NotImplementedError()
+        raise KeyError(key)
 
     def __delitem__(self, key: K) -> None:
         """
@@ -48,10 +50,10 @@ class InfiniteHashTable(Generic[K, V]):
 
         :raises KeyError: when the key doesn't exist.
         """
-        raise NotImplementedError()
+        raise KeyError(key)
 
     def __len__(self):
-        raise NotImplementedError()
+        raise KeyError(key)
 
     def __str__(self) -> str:
         """
@@ -59,15 +61,26 @@ class InfiniteHashTable(Generic[K, V]):
 
         Not required but may be a good testing tool.
         """
-        raise NotImplementedError()
+        items = []
+        for slot in self.table:
+            for key, value in slot:
+                items.append(f"[{key}, {value}]")
+        return"[" + ", ".join(items) + "]"
 
-    def get_location(self, key):
+    def get_location(self, key) -> list[int]:
         """
         Get the sequence of positions required to access this key.
 
         :raises KeyError: when the key doesn't exist.
         """
-        raise NotImplementedError()
+        locations = []
+        for level in range(4):
+            self.level = level
+            position = self.hash(key)
+            if self.table[position] is None:  # the key doesn't exist
+                raise KeyError(key)
+            locations.append(position)
+        return locations
 
     def __contains__(self, key: K) -> bool:
         """
